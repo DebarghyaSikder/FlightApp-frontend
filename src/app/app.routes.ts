@@ -1,16 +1,22 @@
-
 import { Routes } from '@angular/router';
-import { LoginComponent } from './auth/login/login.component';
-import { RegisterComponent } from './auth/register/register.component';
-import { SearchFlightsComponent } from './flights/search/search.component';
-import { FlightResultsComponent } from './flights/results/results.component';
-
+import {Home} from './components/home/home';
+import { App } from './app';
+import { Signup } from './components/signup/signup';
+import { Signin } from './components/signin/signin';
+import { FlightList } from './components/flight-list/flight-list';
+import { authGuard } from './guards/auth.guard';
+import { adminGuard } from './guards/admin.guard';
+import { TicketBooking } from './components/ticket-booking/ticket-booking';
+import { userOrAdminGuard } from './gaurds/userOrAdminGuard';
+import { PassengerRegistration } from './components/passenger-registration/passenger-registration';
 export const routes: Routes = [
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
+    {path:'',component:Home},
+    {path:'signup',component:Signup},
+    {path:'signin',component:Signin},
+    {path:'flights',component:FlightList},
+    {path:'book',component:TicketBooking,canActivate: [userOrAdminGuard]},
+    {path:'register',component:PassengerRegistration,canActivate: [userOrAdminGuard]}
 
-  { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
 
-  { path: 'search-flights', component: SearchFlightsComponent },
-  { path: 'flight-results', component: FlightResultsComponent }
+
 ];
