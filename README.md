@@ -27,11 +27,10 @@ Home Page:
 <img width="1898" height="947" alt="image" src="https://github.com/DebarghyaSikder/FlightApp-frontend/blob/main/Screenshots/HomePage.png" />
 
 ```
-Flight Search Page
+Flight Search Page:
 ```
-<img width="1898" height="947" alt="image" src="https://github.com/DebarghyaSikder/FlightApp-frontend/blob/main/Screenshots/FlightsSearch.png />
 
-
+<img width="1898" height="947" alt="image" src="https://github.com/DebarghyaSikder/FlightApp-frontend/blob/main/Screenshots/FlightsSearch.png" />
 
 ### Microservices
 
