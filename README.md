@@ -57,6 +57,12 @@ Validation- Source and destination cannot be same
 ```
 <img width="1898" height="947" alt="image" src="https://github.com/DebarghyaSikder/FlightApp-frontend/blob/main/Screenshots/Validation1_Location.png" />
 
+```
+Validation- Cannot book for past dates
+```
+<img width="1898" height="947" alt="image" src="https://github.com/DebarghyaSikder/FlightApp-frontend/blob/main/Screenshots/Validation1_Location.png" />
+
+
 
 
 
