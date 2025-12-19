@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { userDetails } from '../../models/userDetails';
 import { UserRole } from '../../enums/user-role.enum';
-import { AuthService } from '../../services/Authentication/auth-service';
+import { AuthService } from '../../services/Authentication/auth.service';
 import { Router } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { usernameValidator } from '../../validatorFunctions/usernameValidator';

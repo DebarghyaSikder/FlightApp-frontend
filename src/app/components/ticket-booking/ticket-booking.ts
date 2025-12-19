@@ -11,7 +11,8 @@ import {
 
 import { TicketService } from '../../services/TicketService/ticket-service';
 import { Ticket } from '../../models/Ticket';
-import { AuthService } from '../../services/Authentication/auth-service';
+import { AuthService } from '../../services/Authentication/auth.service';
+import { UserResponse } from '../../models/UserResponse';
 
 @Component({
   selector: 'app-ticket-booking',
@@ -35,25 +36,28 @@ export class TicketBooking implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.flightId = history.state?.flightId;
-    console.log('Flight ID:', this.flightId);
+  this.flightId = history.state?.flightId;
+  console.log('Flight ID:', this.flightId);
 
-    this.tickets$ = this.refresh$.pipe(
-      startWith(void 0), // 🔥 initial load
-      switchMap(() =>
-        this.authService.currentUser.pipe(
-          take(1),
-          switchMap(user => {
-            if (!user) {
-              throw new Error('User not logged in');
-            }
-            this.passengerId = user.id;
-            return this.ticketService.getTicketsByEmail(user.email);
-          })
-        )
+  this.tickets$ = this.refresh$.pipe(
+    startWith(void 0),
+    switchMap(() =>
+      this.authService.currentUser.pipe(
+        take(1),
+        switchMap((user): Observable<Ticket[]> => {
+          if (!user) {
+            throw new Error('User not logged in');
+          }
+          const typedUser = user as UserResponse;
+
+          this.passengerId = typedUser.id;
+          return this.ticketService.getTicketsByEmail(typedUser.email);
+        })
       )
-    );
-  }
+    )
+  );
+}
+
 
   bookTicket() {
     this.ticketService
@@ -65,8 +69,8 @@ export class TicketBooking implements OnInit {
       .subscribe({
         next: () => {
           console.log('Ticket booked');
-          this.refresh$.next(); // 🔁 refresh tickets
-          this.seatNo = '';     // optional UX improvement
+          this.refresh$.next();
+          this.seatNo = '';
         },
         error: err => console.error('Booking failed', err),
       });
