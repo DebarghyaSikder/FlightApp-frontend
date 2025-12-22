@@ -1,59 +1,149 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
-import { environment } from '../../../environments/environment';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { userDetails } from '../../models/userDetails';
+import { user } from '../../models/user';
+import { BehaviorSubject, catchError, throwError,of } from 'rxjs';
+import { UserRole } from '../../enums/user-role.enum';
 import { UserResponse } from '../../models/UserResponse';
-
-@Injectable({ providedIn: 'root' })
+import { tap } from 'rxjs';
+import { SignInResponse } from '../../models/SignInResponse';
+import { Router } from '@angular/router';
+import { PasswordExpiredResponse } from '../../models/PasswordExpiredResponse';
+function isPasswordExpired(
+  res: SignInResponse
+): res is PasswordExpiredResponse {
+  return (
+    typeof res === 'object' &&
+    res !== null &&
+    'forcePasswordChange' in res &&
+    res.forcePasswordChange === true
+  );
+}
+@Injectable({
+  providedIn: 'root',
+})
 export class AuthService {
 
-  private baseUrl = environment.apiBaseUrl + '/api/auth';
+  private readonly BASE_URL =
+    'http://localhost:8765/auth-service/api/auth';
 
-  private currentUserSubject = new BehaviorSubject<UserResponse | null>(null);
-  currentUser = this.currentUserSubject.asObservable();
-
-  private errorSubject = new BehaviorSubject<string | null>(null);
+  private readonly me$ = new BehaviorSubject<UserResponse | null | undefined>(undefined);
+  private readonly errorSubject = new BehaviorSubject<string | null>(null);
   error$ = this.errorSubject.asObservable();
+  private readonly passwordExpired$ = new BehaviorSubject<boolean>(false);
+passwordExpiredState$ = this.passwordExpired$.asObservable();
 
-  constructor(private http: HttpClient) {}
 
-  signin(data: any): Observable<UserResponse> {
-    return this.http.post<UserResponse>(`${this.baseUrl}/login`, data).pipe(
-      tap(user => {
-        this.saveToken(user.token);
-        this.currentUserSubject.next(user);
-      }),
-      catchError(err => {
-        this.errorSubject.next('Login failed');
-        return throwError(() => err);
-      })
-    );
+  constructor(private readonly http: HttpClient,private readonly router:Router) {
+    this.loadMe();
+    //when site refreshes we can actually have the current user data!
   }
 
-  signup(data: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/register`, data).pipe(
-      catchError(err => {
-        this.errorSubject.next('Signup failed');
-        return throwError(() => err);
-      })
-    );
+  private loadMe() {
+    this.http
+      .get<UserResponse>(`${this.BASE_URL}/me`, { withCredentials: true })
+      .pipe(catchError(() => of(null)))
+      .subscribe(user => this.me$.next(user ?? null));
   }
+
+  get currentUser() {
+    return this.me$.asObservable(); //we are sending it as observable to avoid mutations like an getter we can think
+  }
+setAuthenticatedUser(user: UserResponse) {
+  this.me$.next(user);
+}
+
+handleSignInResponse(res: SignInResponse): void {
+  if (isPasswordExpired(res)) {
+    this.passwordExpired$.next(true);
+    return;
+  }
+
+  this.me$.next(res);
+  this.passwordExpired$.next(false);
+  this.router.navigate(['/']);
+}
+setPasswordExpired(value: boolean) {
+  this.passwordExpired$.next(value);
+}
+
+  signup(user: userDetails) {
+    const payload = {
+      ...user,
+      roles: user.roles.map(role =>
+        UserRole[role].replace('ROLE_', '').toLowerCase()
+      ),
+    };
+
+    return this.http
+      .post(`${this.BASE_URL}/signup`, payload, { withCredentials: true })
+      .pipe(catchError(error => this.handleError(error)));
+  }
+
+ signin(user: user) {
+  return this.http
+    .post<SignInResponse>(
+      `${this.BASE_URL}/signin`,
+      user,
+      {
+      withCredentials: true
+    }
+    )
+    .pipe(
+     catchError(error => this.handleError(error))
+    );
+}
+  // payload:{
+  //   oldPassword:string,
+  //   newPassword:string
+  // }={
+  //   oldPassword:'',
+  //   newPassword:''
+  // }
+
+changePassword(req: { oldPassword: string; newPassword: string }) {
+  return this.http.post(
+    `${this.BASE_URL}/change-password`,
+    req,
+    { withCredentials: true, responseType: 'text' }
+  ).pipe(
+    tap(() => this.me$.next(null)),
+    catchError(err => this.handleError(err))
+  );
+}
+
+
+  signout() {
+    return this.http
+      .post(
+        `${this.BASE_URL}/signout`,
+        {},
+        { withCredentials: true }
+      )
+      .pipe(
+        tap(() => this.me$.next(null)),
+        catchError(error => this.handleError(error))
+      );
+  }
+
+ private handleError(error: HttpErrorResponse) {
+  let message: string;
+
+  if (error.error instanceof ErrorEvent) {
+    message = error.error.message;
+  } else {
+    // Try to get message from different possible locations in backend response
+    message = error.error?.message || error.error || error.statusText || 'An error occurred';
+  }
+
+  this.errorSubject.next(message);
+  console.error('Auth error:', error.status, message);
+
+  return throwError(() => error);
+}
+
 
   clearError() {
     this.errorSubject.next(null);
-  }
-
-  saveToken(token: string) {
-    localStorage.setItem('token', token);
-  }
-
-  getToken() {
-    return localStorage.getItem('token');
-  }
-
-  logout() {
-    localStorage.removeItem('token');
-    this.currentUserSubject.next(null);
   }
 }
