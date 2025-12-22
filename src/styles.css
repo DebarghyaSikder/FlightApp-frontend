@@ -1,9 +1,23 @@
+
+
 body {
-  background-color: #F7E396;
+ background-color:#777886;
   margin: 0;
   color: #434E78;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+   min-height: 100vh;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.65);
+  z-index: -1;
+}
+
 
 html, body {
   height: 100%;
@@ -12,13 +26,16 @@ html, body {
   color: rgba(39, 41, 42, 0.479) !important;
 }
 .navbar {
-  background-color: #607B8F !important;
+   background: linear-gradient(135deg, #607B8F, #4A6572) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
 }
 
 .navbar .nav-link,
 .navbar .navbar-brand {
   color: #ffffff !important;
 }
+
 
 .btn-primary {
   background-color: #E97F4A !important;
