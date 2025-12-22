@@ -1,0 +1,76 @@
+@if (tickets$ | async; as tickets) {
+
+  <div class="row pt-5 g-4">
+
+    @for (ticket of tickets; track ticket.pnr) {
+
+      <div class="col-md-6">
+        <div class="ticket-card">
+
+          <!-- Header -->
+          <div class="ticket-header">
+            <h5 class="mb-0">
+              {{ ticket.origin }}
+              <span class="text-muted mx-2">→</span>
+              {{ ticket.destination }}
+            </h5>
+
+            <span
+              class="status-badge"
+              [class.booked]="ticket.booked"
+              [class.cancelled]="!ticket.booked">
+              {{ ticket.booked ? 'Booked' : 'Cancelled' }}
+            </span>
+          </div>
+
+          <!-- PNR -->
+          <div class="pnr">
+            PNR:
+            <span>{{ ticket.pnr }}</span>
+          </div>
+
+          <div class="ticket-divider"></div>
+
+          <!-- Timing -->
+          <div class="ticket-details">
+            <div>
+              <small>Departure</small>
+              <p>{{ ticket.departureTime | date:'dd MMM yyyy, hh:mm a' }}</p>
+            </div>
+
+            <div>
+              <small>Arrival</small>
+              <p>{{ ticket.arrivalTime | date:'dd MMM yyyy, hh:mm a' }}</p>
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div class="ticket-footer">
+            <span class="seats">
+              Seats: {{ ticket.numberOfSeats }}
+            </span>
+
+            @if (ticket.booked && !isCancelDisabled(ticket)) {
+              <button
+                class="btn btn-danger btn-sm"
+                data-bs-toggle="modal"
+                data-bs-target="#cancelModal"
+                (click)="openCancelModal(ticket)">
+                Cancel Ticket
+              </button>
+            }
+          </div>
+
+        </div>
+      </div>
+
+    }
+
+    @if (tickets.length === 0) {
+      <div class="text-center text-muted mt-5">
+        No tickets found
+      </div>
+    }
+
+  </div>
+}
