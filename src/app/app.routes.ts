@@ -1,14 +1,28 @@
-export const routes = [
-  {
-    path: '',
-    loadComponent: () =>
-      import('./components/home/home')
-        .then(m => m.HomeComponent)
-  },
-  {
-    path: 'search',
-    loadComponent: () =>
-      import('./components/search-flights/search-flights.component')
-        .then(m => m.SearchFlightsComponent)
-  }
+import { Routes } from '@angular/router';
+import {Home} from './components/home/home';
+import { App } from './app';
+import { Signup } from './components/signup/signup';
+import { Signin } from './components/signin/signin';
+import { FlightList } from './components/flight-list/flight-list';
+import { authGuard } from './guards/auth.gaurd';
+import { adminGuard } from './guards/admin.gaurd';
+import { TicketBooking } from './components/ticket-booking/ticket-booking';
+import { userOrAdminGuard } from './guards/userOrAdminGuard';
+import { PassengerRegistration } from './components/passenger-registration/passenger-registration';
+import { TicketList } from './components/ticket-list/ticket-list';
+import { FlightAdmin } from './components/flight-admin/flight-admin';
+import {ChangePassword} from './components/change-password/change-password';
+export const routes: Routes = [
+    {path:'',component:Home},
+    {path:'signup',component:Signup},
+    {path:'signin',component:Signin},
+    {path:'flights',component:FlightList},
+    {path:'book',component:TicketBooking,canActivate: [userOrAdminGuard]},
+    {path:'register',component:PassengerRegistration,canActivate: [userOrAdminGuard]},
+    {path:'tickets',component:TicketList,canActivate:[userOrAdminGuard]},
+    {path:'addFlights',component:FlightAdmin,canActivate:[adminGuard]},
+    {path:'change-password',component:ChangePassword}
+
+
+
 ];
