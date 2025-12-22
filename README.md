@@ -38,19 +38,9 @@ SignUp Page
 <img width="1898" height="947" alt="image" src="https://github.com/DebarghyaSikder/FlightApp-frontend/blob/main/Screenshots/SignUp.png" />
 
 ```
-Registration Successful
-```
-<img width="1898" height="947" alt="image" src="https://github.com/DebarghyaSikder/FlightApp-frontend/blob/main/Screenshots/RegistrationSuccessful.png" />
-
-```
 Login Page
 ```
 <img width="1898" height="947" alt="image" src="https://github.com/DebarghyaSikder/FlightApp-frontend/blob/main/Screenshots/LoginScreen.png" />
-
-```
-Login Successful
-```
-<img width="1898" height="947" alt="image" src="https://github.com/DebarghyaSikder/FlightApp-frontend/blob/main/Screenshots/LoginSuccessful.png" />
 
 ```
 Validation- Source and destination cannot be same
