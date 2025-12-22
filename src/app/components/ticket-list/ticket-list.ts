@@ -90,4 +90,4 @@ export class TicketList implements OnInit, OnChanges, OnDestroy {
   ngOnDestroy() {
     console.log('TicketList component destroyed');
   }
-}
+} 
